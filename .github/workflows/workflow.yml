@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     container: docker:27.2
 
-    var:
+    env:
       DOCKER_IMAGE: flask-app
       DOCKER_NETWORK: flask-net
 
@@ -27,15 +27,15 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ var.DOCKER_IMAGE }} .
+          docker build -t ${{ env.DOCKER_IMAGE }} .
       
       - name: Set up containerizated app
         run: |
-          docker network create ${{ var.DOCKER_NETWORK }}
+          docker network create ${{ env.DOCKER_NETWORK }}
           docker run -d \
             --name redis -p 6379:6379 \
             -v redis:/data \
-            --network ${{ var.DOCKER_NETWORK }} \
+            --network ${{ env.DOCKER_NETWORK }} \
             --network-alias redis \ 
             redis:alpine
           docker run -d \
@@ -46,8 +46,8 @@ jobs:
             -e GUNICORN_BIND=${{ secrets.GUNICORN_BIND }}
             -e PORT=${{ secrets.PORT }}
             -e DATABASE_URI=${{ secrets.DATABASE_URI }} \
-            --network ${{ var.DOCKER_NETWORK }} \
-            flask-app 
+            --network ${{ env.DOCKER_NETWORK }} \
+            ${{ env.DOCKER_IMAGE }}
           
 #          docker logs $(sudo docker ps -a | grep "flask-app" | awk '{print $1}') | grep "H I T   C O U N T E R   S E R V I C E"
       
