@@ -8,11 +8,12 @@ COPY pyproject.toml poetry.lock ./
 RUN python -m pip install poetry && \
     poetry config virtualenvs.create false && \
     poetry lock --no-update && \
-    poetry install --without dev
+    poetry install
 
 # Copy source files last because they change the most
 COPY wsgi.py .
 COPY service ./service
+COPY tests ./tests
 
 # Become non-root user
 RUN useradd -m -r service && \

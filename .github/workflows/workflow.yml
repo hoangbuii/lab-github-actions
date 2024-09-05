@@ -20,11 +20,21 @@ jobs:
       - name: Prepair env file
         run: |
           echo ${{ secrets.ENV_FILE }} > .env
-          cat .env
 
       - name: Build Docker image
         run: |
           docker build -t flaskapp-test .
+      
+      - name: Set up containerizated app
+        run: |
+          docker network create flask-net
+          CID_APP = $(docker run -d --name redis -p 6379:6379 -v redis:/data --network flask-net --network-alias redis redis:alpine)
+          CID_DB = $(docker run -d --name flask-app -p 8080:8080 --env-file .env --network flask-net flask-app)
+          docker logs $CID_APP
+      
+      - name: Run unit tests with PyTest
+        run: |
+          
       
 
 
