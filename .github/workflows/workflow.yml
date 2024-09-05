@@ -15,6 +15,7 @@ jobs:
     env:
       DOCKER_IMAGE: flask-app
       DOCKER_NETWORK: flask-net
+      DOCER_CONTAINER_NAME: flask-app
 
     
     steps:
@@ -25,21 +26,38 @@ jobs:
       #   run: |
       #     echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
+      # Build the Docker image
       - name: Build Docker image
         run: |
           docker build -t ${{ env.DOCKER_IMAGE }} .
       
+      # Run 2 image is flask-app and redis database
       - name: Set up containerizated app
         run: |
           docker network create ${{ env.DOCKER_NETWORK }}
           docker run -d --name redis -p 6379:6379 -v redis:/data --network ${{ env.DOCKER_NETWORK }} --network-alias redis redis:alpine
-          docker run -d --name flask-app -p 8080:8080 -e FLASK_APP=${{ secrets.FLASK_APP }} -e FLASK_DEBUG=${{ secrets.FLASK_DEBUG }} -e GUNICORN_BIND=${{ secrets.GUNICORN_BIND }} -e PORT=${{ secrets.PORT }} -e DATABASE_URI=${{ secrets.DATABASE_URI }} --network ${{ env.DOCKER_NETWORK }} ${{ env.DOCKER_IMAGE }}
+          docker run -d --name ${{ env.DOCER_CONTAINER_NAME }} -p 8080:8080 -e FLASK_APP=${{ secrets.FLASK_APP }} -e FLASK_DEBUG=${{ secrets.FLASK_DEBUG }} -e GUNICORN_BIND=${{ secrets.GUNICORN_BIND }} -e PORT=${{ secrets.PORT }} -e DATABASE_URI=${{ secrets.DATABASE_URI }} --network ${{ env.DOCKER_NETWORK }} ${{ env.DOCKER_IMAGE }}
           
 #          docker logs $(sudo docker ps -a | grep "flask-app" | awk '{print $1}') | grep "H I T   C O U N T E R   S E R V I C E"
-      
+
+      - name: Linting
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          docker exec ${{ env.DOCER_CONTAINER_NAME }}  flake8 service tests --count --select=E9,F63,F7,F82 --show-source --statistics
+          # test for complexity. The GitHub editor is 127 chars wide
+          docker exec ${{ env.DOCER_CONTAINER_NAME }}  flake8 service tests --count --max-complexity=10 --max-line-length=127 --statistics
+          # Run pylint to catch other PEP8 errors
+          docker exec ${{ env.DOCER_CONTAINER_NAME }}  poetry run pylint service tests --max-line-length=127
+
+      # - name: Linting
+      #   run: |
+      #     docker exec ${{ env.DOCER_CONTAINER_NAME }} flake8 service tests --count --select=E9,F63,F7,F82 --show-source --statistics
+
+
+
       - name: Run unit tests with PyTest
         run: |
-          docker exec flask-app poetry run pytest --pspec --cov=service --cov-fail-under=95
+          docker exec ${{ env.DOCER_CONTAINER_NAME }} poetry run pytest --pspec --cov=service --cov-fail-under=95
       
 
 
