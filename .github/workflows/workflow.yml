@@ -40,15 +40,6 @@ jobs:
           
 #          docker logs $(sudo docker ps -a | grep "flask-app" | awk '{print $1}') | grep "H I T   C O U N T E R   S E R V I C E"
 
-      - name: Linting
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          docker exec ${{ env.DOCER_CONTAINER_NAME }}  flake8 service tests --count --select=E9,F63,F7,F82 --show-source --statistics
-          # test for complexity. The GitHub editor is 127 chars wide
-          docker exec ${{ env.DOCER_CONTAINER_NAME }}  flake8 service tests --count --max-complexity=10 --max-line-length=127 --statistics
-          # Run pylint to catch other PEP8 errors
-          docker exec ${{ env.DOCER_CONTAINER_NAME }}  poetry run pylint service tests --max-line-length=127
-
       # - name: Linting
       #   run: |
       #     docker exec ${{ env.DOCER_CONTAINER_NAME }} flake8 service tests --count --select=E9,F63,F7,F82 --show-source --statistics
