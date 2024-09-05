@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # container: python:3.11-slim
+    container: docker:27.2
 
     
     steps:
