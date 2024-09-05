@@ -21,6 +21,10 @@ jobs:
         run: |
           echo ${{ secrets.ENV_FILE }} > .env
 
+      - name: Login to Docker hub
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
       - name: Build Docker image
         run: |
           docker build -t flaskapp-test .
@@ -31,8 +35,8 @@ jobs:
           docker run -d --name redis -p 6379:6379 -v redis:/data --network flask-net --network-alias redis redis:alpine
           docker run -d --name flask-app -p 8080:8080 --env-file .env --network flask-net flask-app
       
-      - name: Run unit tests with PyTest
-        run: |
+      # - name: Run unit tests with PyTest
+      #   run: |
           
       
 
