@@ -34,7 +34,7 @@ jobs:
           docker network create flask-net
           docker run -d --name redis -p 6379:6379 -v redis:/data --network flask-net --network-alias redis redis:alpine
           docker run -d --name flask-app -p 8080:8080 --env-file .env --network flask-net flask-app
-          docker logs $(sudo docker ps -a | grep "flask-app" | awk '{print $1}')
+          docker logs $(sudo docker ps -a | grep "flask-app" | awk '{print $1}') | grep "H I T   C O U N T E R   S E R V I C E"
       
       - name: Run unit tests with PyTest
         run: |
