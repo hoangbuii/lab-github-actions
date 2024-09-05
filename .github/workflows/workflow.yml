@@ -32,19 +32,17 @@ jobs:
       - name: Set up containerizated app
         run: |
           docker network create ${{ env.DOCKER_NETWORK }}
-          docker run -d \
-            --name redis -p 6379:6379 \
-            -v redis:/data \
+          docker run -d --name redis -p 6379:6379 -v redis:/data \
             --network ${{ env.DOCKER_NETWORK }} \
             --network-alias redis \ 
             redis:alpine
           docker run -d \
             --name flask-app \ 
             -p 8080:8080 \
-            -e FLASK_APP=${{ secrets.FLASK_APP }}
-            -e FLASK_DEBUG=${{ secrets.FLASK_DEBUG }}
-            -e GUNICORN_BIND=${{ secrets.GUNICORN_BIND }}
-            -e PORT=${{ secrets.PORT }}
+            -e FLASK_APP=${{ secrets.FLASK_APP }} \
+            -e FLASK_DEBUG=${{ secrets.FLASK_DEBUG }} \
+            -e GUNICORN_BIND=${{ secrets.GUNICORN_BIND }} \
+            -e PORT=${{ secrets.PORT }} \
             -e DATABASE_URI=${{ secrets.DATABASE_URI }} \
             --network ${{ env.DOCKER_NETWORK }} \
             ${{ env.DOCKER_IMAGE }}
