@@ -19,7 +19,7 @@ jobs:
 
       - name: Prepair env file
         run: |
-          cat ${{ secrets.ENV_FILE }} > .env
+          echo ${{ secrets.ENV_FILE }} > .env
           cat .env
 
       - name: Build Docker image
