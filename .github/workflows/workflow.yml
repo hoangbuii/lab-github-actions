@@ -58,7 +58,7 @@ jobs:
           sudo docker push ${{ env.DOCKER_IMAGE }}
 
   clean:
-    need: [push, test]
+    needs: [push, test]
     runs-on: self-hosted
     steps:
       - name: Remove all Containers
