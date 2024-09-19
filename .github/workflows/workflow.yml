@@ -9,8 +9,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    container: docker:27.2
+    runs-on: github-runner
+    # container: docker:27.2
 
     env:
       DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/flask-app
