@@ -21,14 +21,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Looking for user
+        run: |
+          whoami
+
       # Build the Docker image (add check user)
       - name: Build Docker image
         run: |
-          whoami
           sudo docker build -t ${{ env.DOCKER_IMAGE }} .
   
   test:
     runs-on: self-hosted
+    needs: build
     steps:
       
       # Run 2 image is flask-app and redis database
@@ -44,6 +48,7 @@ jobs:
 
   push:
     runs-on: self-hosted
+    needs: test
     steps:
       - name: Login to Docker hub
         run: |
@@ -53,14 +58,21 @@ jobs:
           sudo docker push ${{ env.DOCKER_IMAGE }}
 
   clean:
+    need: [push, test]
     runs-on: self-hosted
     steps:
-      - name: Clean Containers, Docker Network and Docker Images
+      - name: Remove all Containers
         run: |
           sudo docker rm -vf ${{ env.DOCKER_CONTAINER_NAME }}
           sudo docker rm -vf redis
+      
+      - name: Remove all Docker Images
+        run: |
           sudo docker images rm ${{ env.DOCKER_IMAGE }}
           sudo docker image rm $(sudo docker image ls | grep "redis" | awk '{print $3}')
+
+      - name: Remove Docker Network
+        run: |
           sudo docker network rm ${{ env.DOCKER_NETWORK }}
 
 
