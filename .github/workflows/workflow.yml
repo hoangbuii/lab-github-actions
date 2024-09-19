@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: github-runner
+    runs-on: self-hosted
     # container: docker:27.2
 
     env:
