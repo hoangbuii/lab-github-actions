@@ -1,4 +1,4 @@
-name: CI Build
+name: Weather-Pipeline
 on:
   push:
     branches:
@@ -7,29 +7,29 @@ on:
     branches:
       - master
 
+env:
+  DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/flask-app
+  DOCKER_NETWORK: flask-net
+  DOCKER_CONTAINER_NAME: flask-app
+
+
 jobs:
   build:
     runs-on: self-hosted
-    # container: docker:27.2
 
-    env:
-      DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/flask-app
-      DOCKER_NETWORK: flask-net
-      DOCKER_CONTAINER_NAME: flask-app
-
-    
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-     
-      - name: Login to Docker hub
-        run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      # Build the Docker image
+      # Build the Docker image (add check user)
       - name: Build Docker image
         run: |
+          whoami
           sudo docker build -t ${{ env.DOCKER_IMAGE }} .
+  
+  test:
+    runs-on: self-hosted
+    steps:
       
       # Run 2 image is flask-app and redis database
       - name: Set up containerizated app
@@ -42,9 +42,27 @@ jobs:
         run: |
           sudo docker exec ${{ env.DOCKER_CONTAINER_NAME }} poetry run pytest --pspec --cov=service --cov-fail-under=95
 
+  push:
+    runs-on: self-hosted
+    steps:
+      - name: Login to Docker hub
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
       - name: Push to Dockerhub
         run: |
           sudo docker push ${{ env.DOCKER_IMAGE }}
+
+  clean:
+    runs-on: self-hosted
+    steps:
+      - name: Clean Containers, Docker Network and Docker Images
+        run: |
+          sudo docker rm -vf ${{ env.DOCKER_CONTAINER_NAME }}
+          sudo docker rm -vf redis
+          sudo docker images rm ${{ env.DOCKER_IMAGE }}
+          sudo docker image rm $(sudo docker image ls | grep "redis" | awk '{print $3}')
+          sudo docker network rm ${{ env.DOCKER_NETWORK }}
+
 
 
     # # Required services    
