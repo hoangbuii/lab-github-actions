@@ -68,7 +68,7 @@ jobs:
       
       - name: Remove all Docker Images
         run: |
-          sudo docker images rm ${{ env.DOCKER_IMAGE }}
+          sudo docker image rm ${{ env.DOCKER_IMAGE }}
           sudo docker image rm $(sudo docker image ls | grep "redis" | awk '{print $3}')
 
       - name: Remove Docker Network
