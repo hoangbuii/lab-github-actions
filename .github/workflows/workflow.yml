@@ -13,7 +13,7 @@ jobs:
     container: docker:27.2
 
     env:
-      DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}flask-app
+      DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/flask-app
       DOCKER_NETWORK: flask-net
       DOCKER_CONTAINER_NAME: flask-app
 
