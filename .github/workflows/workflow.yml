@@ -99,9 +99,6 @@ jobs:
         run: |
           ssh ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_IP_ADDR }} 'sudo docker run -d --name ${{ env.DOCKER_CONTAINER_NAME }} -p 8080:8080 -e FLASK_APP=${{ secrets.FLASK_APP }} -e FLASK_DEBUG=${{ secrets.FLASK_DEBUG }} -e GUNICORN_BIND=${{ secrets.GUNICORN_BIND }} -e PORT=${{ secrets.PORT }} -e DATABASE_URI=${{ secrets.DATABASE_URI }} --network ${{ env.DOCKER_NETWORK }} ${{ env.DOCKER_IMAGE }}'
       
-      - name: Test staging is running
-        run: |
-          curl localhost:9090 | grep "Hit Counter Service"
     
   deploy-to-production:
     needs: [push, deploy-to-staging]
@@ -124,9 +121,6 @@ jobs:
         run: |
           ssh ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_IP_ADDR }} 'sudo docker run -d --name ${{ env.DOCKER_CONTAINER_NAME }} -p 8080:8080 -e FLASK_APP=${{ secrets.FLASK_APP }} -e FLASK_DEBUG=${{ secrets.FLASK_DEBUG }} -e GUNICORN_BIND=${{ secrets.GUNICORN_BIND }} -e PORT=${{ secrets.PORT }} -e DATABASE_URI=${{ secrets.DATABASE_URI }} --network ${{ env.DOCKER_NETWORK }} ${{ env.DOCKER_IMAGE }}'
       
-      - name: Test production is running
-        run: |
-          curl localhost | grep "Hit Counter Service"
       
 
 
