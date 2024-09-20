@@ -93,7 +93,7 @@ jobs:
 
       - name: Pull images
         run: |
-          sudo docker pull ${{ env.DOCKER_CONTAINER_NAME }}
+          sudo docker pull ${{ env.DOCKER_IMAGE }}
       
       - name: Setup new version
         run: |
