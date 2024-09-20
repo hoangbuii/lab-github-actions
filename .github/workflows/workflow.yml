@@ -1,11 +1,16 @@
 name: Pipeline
+# on:
+#   push:
+#     branches:
+#       - master
+#   pull_request:
+#     branches:
+#       - master
+
 on:
   push:
     branches:
-      - master
-  pull_request:
-    branches:
-      - master
+      - '**'
 
 env:
   DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/flask-app
@@ -103,7 +108,6 @@ jobs:
   deploy-to-production:
     needs: [push, deploy-to-staging]
     runs-on: self-hosted
-    if: github.event_name == 'workflow_dispatch'
     steps:
       - name: Login to Docker hub
         run: |
