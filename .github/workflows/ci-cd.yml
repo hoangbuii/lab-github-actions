@@ -108,26 +108,26 @@ jobs:
           ssh ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_IP_ADDR }} 'sudo docker run -d --name ${{ env.DOCKER_CONTAINER_NAME }} -p 8080:8080 -e FLASK_APP=${{ secrets.FLASK_APP }} -e FLASK_DEBUG=${{ secrets.FLASK_DEBUG }} -e GUNICORN_BIND=${{ secrets.GUNICORN_BIND }} -e PORT=${{ secrets.PORT }} -e DATABASE_URI=${{ secrets.DATABASE_URI }} --network ${{ env.DOCKER_NETWORK }} ${{ env.DOCKER_IMAGE }}'
       
     
-  # deploy-to-production:
-  #   needs: [push, deploy-to-staging]
-  #   runs-on: self-hosted
-  #   steps:
-  #     - name: Login to Docker hub
-  #       run: |
-  #         ssh ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_IP_ADDR }} 'echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin'
+  deploy-to-production:
+    needs: [push, deploy-to-staging]
+    runs-on: self-hosted
+    steps:
+      - name: Login to Docker hub
+        run: |
+          ssh ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_IP_ADDR }} 'echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin'
       
-  #     - name: Remove old version
-  #       run: |
-  #         ssh ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_IP_ADDR }} 'sudo docker rm -vf ${{ env.DOCKER_CONTAINER_NAME }}'
+      - name: Remove old version
+        run: |
+          ssh ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_IP_ADDR }} 'sudo docker rm -vf ${{ env.DOCKER_CONTAINER_NAME }}'
 
-  #     - name: Pull images
-  #       run: |
-  #         ssh ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_IP_ADDR }} 'sudo docker pull ${{ env.DOCKER_IMAGE }}'
+      - name: Pull images
+        run: |
+          ssh ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_IP_ADDR }} 'sudo docker pull ${{ env.DOCKER_IMAGE }}'
       
-  #     - name: Setup new version
-  #       run: |
-  #         ssh ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_IP_ADDR }} 'sudo docker run -d --name ${{ env.DOCKER_CONTAINER_NAME }} -p 8080:8080 -e FLASK_APP=${{ secrets.FLASK_APP }} -e FLASK_DEBUG=${{ secrets.FLASK_DEBUG }} -e GUNICORN_BIND=${{ secrets.GUNICORN_BIND }} -e PORT=${{ secrets.PORT }} -e DATABASE_URI=${{ secrets.DATABASE_URI }} --network ${{ env.DOCKER_NETWORK }} ${{ env.DOCKER_IMAGE }}'
-      
+      - name: Setup new version
+        run: |
+          ssh ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_IP_ADDR }} 'sudo docker run -d --name ${{ env.DOCKER_CONTAINER_NAME }} -p 8080:8080 -e FLASK_APP=${{ secrets.FLASK_APP }} -e FLASK_DEBUG=${{ secrets.FLASK_DEBUG }} -e GUNICORN_BIND=${{ secrets.GUNICORN_BIND }} -e PORT=${{ secrets.PORT }} -e DATABASE_URI=${{ secrets.DATABASE_URI }} --network ${{ env.DOCKER_NETWORK }} ${{ env.DOCKER_IMAGE }}'
+    if: github.event_name == 'workflow_dispatch'  
       
 
 
