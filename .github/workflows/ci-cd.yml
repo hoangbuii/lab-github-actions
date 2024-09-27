@@ -29,6 +29,9 @@ jobs:
       - name: Looking for user
         run: |
           whoami
+      - name: Login to Docker hub
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       # Build the Docker image (add check user)
       - name: Build Docker image
