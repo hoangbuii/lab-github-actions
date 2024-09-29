@@ -30,6 +30,7 @@ jobs:
   
   clean:
     runs-on: self-hosted
+    needs: tag-and-push
     steps:
       - name:
         run: |

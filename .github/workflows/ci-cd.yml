@@ -76,7 +76,6 @@ jobs:
       
       - name: Remove all Database Images
         run: |
-          # sudo docker image rm ${{ env.DOCKER_IMAGE }}
           sudo docker image rm $(sudo docker image ls | grep "redis" | awk '{print $3}')
 
       - name: Remove Docker Network
