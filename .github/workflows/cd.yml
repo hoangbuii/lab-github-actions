@@ -2,7 +2,7 @@ name: Continous Deployment Pipeline
 on:
   push:
     tags: 
-      - "v.*"
+      - "v*"
   workflow_dispatch:
 
 
@@ -14,15 +14,27 @@ jobs:
   tag-and-push:
     runs-on: self-hosted
     steps:
+      - name: Extract version from tag
+        id: vars
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
       - name: Login to Docker hub
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
       - name: tag docker image
         run: |
-          sudo docker tag ${{ env.DOCKER_IMAGE }} ${{ github.ref }}
+          sudo docker tag ${{ env.DOCKER_IMAGE }}:${{ github.sha }} ${{ env.DOCKER_IMAGE }}:${{ env.VERSION }}
       - name: Push to Dockerhub
         run: |
-          sudo docker push ${{ env.DOCKER_IMAGE }}:${{ github.ref }}
+          sudo docker push ${{ env.DOCKER_IMAGE }}:${{ env.VERSION }}
+  
+  clean:
+    runs-on: self-hosted
+    steps:
+      - name:
+        run: |
+          sudo docker image rm ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+          sudo docker image rm ${{ env.DOCKER_IMAGE }}:${{ env.VERSION }}
 
 
   # deploy-to-production:

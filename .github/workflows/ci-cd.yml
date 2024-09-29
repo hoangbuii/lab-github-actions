@@ -36,7 +36,7 @@ jobs:
       # Build the Docker image (add check user)
       - name: Build Docker image
         run: |
-          sudo docker build -t ${{ env.DOCKER_IMAGE }} .
+          sudo docker build -t ${{ env.DOCKER_IMAGE }}:${{ github.sha }} .
   
   test:
     runs-on: self-hosted
@@ -48,7 +48,7 @@ jobs:
         run: |
           sudo docker network create ${{ env.DOCKER_NETWORK }}
           sudo docker run -d --name redis -p 6379:6379 -v redis:/data --network ${{ env.DOCKER_NETWORK }} --network-alias redis redis:alpine
-          sudo docker run -d --name ${{ env.DOCKER_CONTAINER_NAME }} -p 8080:8080 -e FLASK_APP=${{ secrets.FLASK_APP }} -e FLASK_DEBUG=${{ secrets.FLASK_DEBUG }} -e GUNICORN_BIND=${{ secrets.GUNICORN_BIND }} -e PORT=${{ secrets.PORT }} -e DATABASE_URI=${{ secrets.DATABASE_URI }} --network ${{ env.DOCKER_NETWORK }} ${{ env.DOCKER_IMAGE }}
+          sudo docker run -d --name ${{ env.DOCKER_CONTAINER_NAME }} -p 8080:8080 -e FLASK_APP=${{ secrets.FLASK_APP }} -e FLASK_DEBUG=${{ secrets.FLASK_DEBUG }} -e GUNICORN_BIND=${{ secrets.GUNICORN_BIND }} -e PORT=${{ secrets.PORT }} -e DATABASE_URI=${{ secrets.DATABASE_URI }} --network ${{ env.DOCKER_NETWORK }} ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
 
       - name: Run unit tests with PyTest
         run: |
@@ -65,23 +65,23 @@ jobs:
   #       run: |
   #         sudo docker push ${{ env.DOCKER_IMAGE }}
 
-  # clean:
-  #   needs: [push, test]
-  #   runs-on: self-hosted
-  #   steps:
-  #     - name: Remove all Containers
-  #       run: |
-  #         sudo docker rm -vf ${{ env.DOCKER_CONTAINER_NAME }}
-  #         sudo docker rm -vf redis
+  clean:
+    needs: [test]
+    runs-on: self-hosted
+    steps:
+      - name: Remove all Containers
+        run: |
+          sudo docker rm -vf ${{ env.DOCKER_CONTAINER_NAME }}
+          sudo docker rm -vf redis
       
-  #     - name: Remove all Docker Images
-  #       run: |
-  #         sudo docker image rm ${{ env.DOCKER_IMAGE }}
-  #         sudo docker image rm $(sudo docker image ls | grep "redis" | awk '{print $3}')
+      - name: Remove all Database Images
+        run: |
+          # sudo docker image rm ${{ env.DOCKER_IMAGE }}
+          sudo docker image rm $(sudo docker image ls | grep "redis" | awk '{print $3}')
 
-  #     - name: Remove Docker Network
-  #       run: |
-  #         sudo docker network rm ${{ env.DOCKER_NETWORK }}
+      - name: Remove Docker Network
+        run: |
+          sudo docker network rm ${{ env.DOCKER_NETWORK }}
 
   
 
