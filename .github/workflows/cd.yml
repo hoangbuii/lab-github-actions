@@ -23,6 +23,19 @@ jobs:
       - name: Push to Dockerhub
         run: |
           sudo docker push ${{ env.DOCKER_IMAGE }}:${{ github.ref_name }}
+
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Change version
+        run: |
+          sed -i "s/<VERSION>/${{ github.ref_name }}/g" tf-k8s/k8s-manifests/flask-app-deployment.yaml
+      
+      - name: Copy TF file to run folder
+        run: |
+          cp -rfp tf-k8s/k8s-manifests ~/.git-tf-ops/k8s-manifests
+          cp main.tf ~/.git-tf-ops/
+          cp variables.tf ~/.git-tf-ops/
   
   clean:
     runs-on: self-hosted
@@ -32,7 +45,11 @@ jobs:
         run: |
           sudo docker image rm ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
           sudo docker image rm ${{ env.DOCKER_IMAGE }}:${{ github.ref_name }}
-
+      # - name: Remove TF directory
+      #   run: |
+      #     rm -rf ~/.git-tf-ops/k8s-manifests
+      #     rm ~/.git-tf-ops/main.tf
+      #     rm ~/.git-tf-ops/variables.tf
   
 
 

@@ -1,4 +1,4 @@
-name: Continous Integration + Continous Delivery Pipeline
+name: Continous Integration
 # on:
 #   push:
 #     branches:
@@ -29,9 +29,9 @@ jobs:
       - name: Looking for user
         run: |
           whoami
-      - name: Create tf directory
-        run: |
-          mkdir ~/.git-tf-ops
+      # - name: Create tf directory
+      #   run: |
+      #     mkdir ~/.git-tf-ops
       - name: Login to Docker hub
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin

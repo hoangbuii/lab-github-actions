@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flask-app-env
+  namespace: flask-app  # Replace with your desired namespace
+data:
+  FLASK_APP: wsgi:app
+  FLASK_DEBUG: "True"
+  GUNICORN_BIND: "0.0.0.0:8000"
+  PORT: 8000
+  DATABASE_URI: "redis://redis:6379"
+
