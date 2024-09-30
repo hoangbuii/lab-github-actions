@@ -39,17 +39,17 @@ jobs:
   
   clean:
     runs-on: self-hosted
-    needs: tag-and-push
+    needs: [tag-and-push, deploy]
     steps:
       - name: remove all images
         run: |
           sudo docker image rm ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
           sudo docker image rm ${{ env.DOCKER_IMAGE }}:${{ github.ref_name }}
-      # - name: Remove TF directory
-      #   run: |
-      #     rm -rf ~/.git-tf-ops/k8s-manifests
-      #     rm ~/.git-tf-ops/main.tf
-      #     rm ~/.git-tf-ops/variables.tf
+      - name: Remove TF directory
+        run: |
+          rm -rf ~/.git-tf-ops/k8s-manifests
+          rm ~/.git-tf-ops/main.tf
+          rm ~/.git-tf-ops/variables.tf
   
 
 
