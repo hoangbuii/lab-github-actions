@@ -28,13 +28,12 @@ jobs:
     runs-on: self-hosted
     needs: tag-and-push
     steps:
-      - name: Extract version from tag
-        id: vars
-        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
       - name: remove all images
         run: |
           sudo docker image rm ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
           sudo docker image rm ${{ env.DOCKER_IMAGE }}:${{ github.ref_name }}
+
+  
 
 
   # deploy-to-production:
