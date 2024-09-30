@@ -26,6 +26,7 @@ jobs:
 
   deploy:
     runs-on: self-hosted
+    needs: tag-and-push
     steps:
       - name: Change version
         run: |
@@ -33,10 +34,14 @@ jobs:
       
       - name: Copy TF file to run folder
         run: |
-          cp -rfp tf-k8s/k8s-manifests ~/.git-tf-ops/k8s-manifests
-          cp tf-k8s/main.tf ~/.git-tf-ops/
-          cp tf-k8s/variables.tf ~/.git-tf-ops/
-  
+          cp -rfp tf-k8s/k8s-manifests ${{ secrets.TF_DIR }}/k8s-manifests
+          cp tf-k8s/main.tf ${{ secrets.TF_DIR }}/
+          cp tf-k8s/variables.tf ${{ secrets.TF_DIR }}/
+      
+      - name: Apply change by Terraform
+        run: |
+          cd ${{ secrets.TF_DIR }}
+          terraform apply -auto-approve
   clean:
     runs-on: self-hosted
     needs: [tag-and-push, deploy]
@@ -47,9 +52,9 @@ jobs:
           sudo docker image rm ${{ env.DOCKER_IMAGE }}:${{ github.ref_name }}
       - name: Remove TF directory
         run: |
-          rm -rf ~/.git-tf-ops/k8s-manifests
-          rm ~/.git-tf-ops/main.tf
-          rm ~/.git-tf-ops/variables.tf
+          rm -rf ${{ secrets.TF_DIR }}/k8s-manifests
+          rm ${{ secrets.TF_DIR }}/main.tf
+          rm ${{ secrets.TF_DIR }}/variables.tf
   
 
 
