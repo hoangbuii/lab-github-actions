@@ -22,7 +22,10 @@
 
 name: Actions Runner Controller Demo
 on:
-  workflow_dispatch:
+#  workflow_dispatch:
+  push:
+     branches:
+      - '**'
 
 jobs:
   Explore-GitHub-Actions:
