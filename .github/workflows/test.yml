@@ -41,5 +41,11 @@ jobs:
           cd $HOME
           curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.30.0/2024-05-12/bin/linux/amd64/kubectl
           chmod +x ./kubectl
+          mkdir -p ~/.kube
+          echo "${{ secrets.K8S_CONF }}" > ~/.kube/config
+          export KUBECONFIG=~/.kube/config
+          export PATH="kubectl:$PATH"
+          source <(kubectl completion bash)
           sudo ./kubectl auth can-i get pods
+          sudo ./kubectl get pods -A
       
