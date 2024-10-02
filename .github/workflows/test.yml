@@ -39,7 +39,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install curl libcurl4 -y
           cd $HOME
-          curl https://dl.k8s.io/release/v1.26.0/bin/linux/arm64/kubectl
+          curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.30.0/2024-05-12/bin/linux/amd64/kubectl
           chmod +x ./kubectl
           ./kubectl auth can-i get pods
           ./kubectl get pods -A
