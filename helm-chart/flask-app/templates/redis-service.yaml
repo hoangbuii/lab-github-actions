@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.common.resourceName.db }}
+  namespace: {{ .Values.common.namespace }}
+spec:
+  type: ClusterIP  
+  ports:
+    - port: {{ .Values.expose.service.db.port }}
+      targetPort: {{ .Values.expose.service.db.targetPort }}
+  selector:
+    app: {{ .Values.common.resourceName.db }}
+

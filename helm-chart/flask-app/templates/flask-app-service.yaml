@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.common.resourceName.app }}-service
+  namespace: {{ .Values.common.namespace }}
+spec:
+  selector:
+    app: {{ .Values.common.resourceName.app }}
+  ports:
+  - protocol: TCP
+    port: {{ .Values.expose.service.app.port }}
+    targetPort: {{ .Values.expose.service.app.targetPort }}
+    nodePort: {{ .Values.expose.service.app.nodePort }}
+  type: NodePort
+

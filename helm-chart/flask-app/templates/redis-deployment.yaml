@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.common.resourceName.db }}
+  namespace: {{ .Values.common.namespace }}
+  labels:
+    app: {{ .Values.common.resourceName.db }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.common.resourceName.db }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.common.resourceName.db }}
+    spec:
+      containers:
+      - name: {{ .Values.common.resourceName.db }}
+        image: {{ .Values.image.db.repo }}:{{ .Values.image.db.tag }}
+        ports:
+        - containerPort: {{ .Values.expose.deployment.db }}
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+

@@ -1,21 +1,41 @@
-name: Continous Integration
+# name: Continous Integration
 
+# on:
+#   push:
+#     branches:
+#       - '**'
+# jobs:
+#   build:
+#     name: Build
+#     runs-on:
+#       - self-hosted
+#       - k8s-runner
+#     steps:
+#       - name: Get Pods
+#         run: |
+#           set -ex
+#           cd $HOME
+#           wget https://dl.k8s.io/release/v1.26.0/bin/linux/arm64/kubectl
+#           chmod +x ./kubectl
+#           ./kubectl auth can-i get pods
+#           ./kubectl get pods -A
+
+name: Actions Runner Controller Demo
 on:
-  push:
-    branches:
-      - '**'
+  workflow_dispatch:
+
 jobs:
-  build:
-    name: Build
-    runs-on:
-      - self-hosted
-      - k8s-runner
+  Explore-GitHub-Actions:
+    # You need to use the INSTALLATION_NAME from the previous step
+    runs-on: arc-runner-set
     steps:
-      - name: Get Pods
+      - name: say-hello
         run: |
+          echo "hello"
           set -ex
           cd $HOME
           wget https://dl.k8s.io/release/v1.26.0/bin/linux/arm64/kubectl
           chmod +x ./kubectl
           ./kubectl auth can-i get pods
           ./kubectl get pods -A
+        

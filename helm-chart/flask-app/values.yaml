@@ -1,0 +1,28 @@
+common:
+  resourceName:
+    app: flask-app
+    db: redis
+  namespace: flask-app
+
+image:
+  db:
+    repo: redis
+    tag: 6.2
+  app:
+    repo: docker.io/hoangbuii2711/flask-app
+    tag: v1.2.1
+
+expose:
+  deployment:
+    app:
+      8080
+    db:
+      6379
+  service:
+    app:
+      port: 8080
+      targetPort: 8080
+      nodePort: 30007
+    db:
+      port: 6379
+      targetPort: 6379

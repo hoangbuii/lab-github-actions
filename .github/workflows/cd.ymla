@@ -24,24 +24,46 @@ jobs:
         run: |
           sudo docker push ${{ env.DOCKER_IMAGE }}:${{ github.ref_name }}
 
+  # deploy:
+  #   runs-on: self-hosted
+  #   needs: tag-and-push
+  #   steps:
+  #     - name: Change version
+  #       run: |
+  #         sed -i "s/<VERSION>/${{ github.ref_name }}/g" tf-k8s/k8s-manifests/flask-app-deployment.yaml
+      
+  #     - name: Copy TF file to run folder
+  #       run: |
+  #         cp -rfp tf-k8s/k8s-manifests ${{ secrets.TF_DIR }}/k8s-manifests
+  #         cp tf-k8s/main.tf ${{ secrets.TF_DIR }}/
+  #         cp tf-k8s/variables.tf ${{ secrets.TF_DIR }}/
+      
+  #     - name: Apply change by Terraform
+  #       run: |
+  #         cd ${{ secrets.TF_DIR }}
+  #         terraform apply -auto-approve
   deploy:
     runs-on: self-hosted
     needs: tag-and-push
     steps:
-      - name: Change version
+      - name: Deploy by helm
         run: |
-          sed -i "s/<VERSION>/${{ github.ref_name }}/g" tf-k8s/k8s-manifests/flask-app-deployment.yaml
+          helm upgrade --install flask-app ./helm-chart/flask-app --set-string image.app.tag=${{ github.ref_name }}
+      # - name: Change version
+      #   run: |
+      #     sed -i "s/<VERSION>/${{ github.ref_name }}/g" tf-k8s/k8s-manifests/flask-app-deployment.yaml
       
-      - name: Copy TF file to run folder
-        run: |
-          cp -rfp tf-k8s/k8s-manifests ${{ secrets.TF_DIR }}/k8s-manifests
-          cp tf-k8s/main.tf ${{ secrets.TF_DIR }}/
-          cp tf-k8s/variables.tf ${{ secrets.TF_DIR }}/
+      # - name: Copy TF file to run folder
+      #   run: |
+      #     cp -rfp tf-k8s/k8s-manifests ${{ secrets.TF_DIR }}/k8s-manifests
+      #     cp tf-k8s/main.tf ${{ secrets.TF_DIR }}/
+      #     cp tf-k8s/variables.tf ${{ secrets.TF_DIR }}/
       
-      - name: Apply change by Terraform
-        run: |
-          cd ${{ secrets.TF_DIR }}
-          terraform apply -auto-approve
+      # - name: Apply change by Terraform
+      #   run: |
+      #     cd ${{ secrets.TF_DIR }}
+      #     terraform apply -auto-approve
+
   clean:
     runs-on: self-hosted
     needs: [tag-and-push, deploy]
@@ -50,11 +72,11 @@ jobs:
         run: |
           sudo docker image rm ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
           sudo docker image rm ${{ env.DOCKER_IMAGE }}:${{ github.ref_name }}
-      - name: Remove TF directory
-        run: |
-          rm -rf ${{ secrets.TF_DIR }}/k8s-manifests
-          rm ${{ secrets.TF_DIR }}/main.tf
-          rm ${{ secrets.TF_DIR }}/variables.tf
+      # - name: Remove TF directory
+      #   run: |
+      #     rm -rf ${{ secrets.TF_DIR }}/k8s-manifests
+      #     rm ${{ secrets.TF_DIR }}/main.tf
+      #     rm ${{ secrets.TF_DIR }}/variables.tf
   
 
 
