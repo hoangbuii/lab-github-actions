@@ -45,6 +45,6 @@ jobs:
           echo "${{ secrets.K8S_CONF }}" > ~/.kubernetes/admin.conf
           export KUBECONFIG=~/.kubernetes/admin.conf
           export PATH="kubectl:$PATH"
-          echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc
+          source <(kubectl completion bash)
           sudo ./kubectl auth can-i get pods
       
