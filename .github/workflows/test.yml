@@ -40,12 +40,12 @@ jobs:
           sudo apt-get install curl libcurl4 -y
           cd $HOME
           curl -LO https://dl.k8s.io/release/v1.26.11/bin/linux/amd64/kubectl
-          chmod +x kubectl
+          chmod +x ./kubectl
           mkdir -p ~/.kube
           echo "${{ secrets.K8S_CONF }}" > ~/.kube/config
           export KUBECONFIG=~/.kube/config
-          export PATH="kubectl:$PATH"
-          source <(kubectl completion bash)
-          sudo kubectl get node
+          export PATH="./kubectl:$PATH"
+          source <(./kubectl completion bash)
+          sudo ./kubectl get node
 
     
