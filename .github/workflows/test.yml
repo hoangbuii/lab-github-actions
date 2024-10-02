@@ -43,7 +43,9 @@ jobs:
           chmod +x ./kubectl
           sudo mkdir /etc/kubernetes
           # sudo echo "${{ secrets.K8S_CONF }}" > /etc/kubernetes/admin.conf
-          sudo cat << EOF ${{ secrets.K8S_CONF }} EOF
+          sudo cat << EOF 
+          ${{ secrets.K8S_CONF }} 
+          EOF
           # export KUBECONFIG=/etc/kubernetes/admin.conf
           # export PATH="kubectl:$PATH"
           # echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc
