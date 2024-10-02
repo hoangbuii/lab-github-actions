@@ -33,6 +33,5 @@ jobs:
         run: |
           whoami
           echo "hello"
-          ls /etc
-          sudo apt-get install curl
+          sudo apt-get install curl -y
         
