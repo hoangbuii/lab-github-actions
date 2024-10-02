@@ -45,7 +45,7 @@ jobs:
           echo "${{ secrets.K8S_CONF }}" > ~/.kube/config
           sudo chown $(id -u):$(id -g) ~/.kube/config
           export KUBECONFIG=~/.kube/config
-          export PATH="./kubectl:$PATH"
+          export PATH="kubectl:$PATH"
           source <(kubectl completion bash)
           sudo ./kubectl auth can-i get pods
       
