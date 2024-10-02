@@ -2,6 +2,7 @@ common:
   resourceName:
     app: flask-app
     db: redis
+    cm: flask-app-env
   namespace: flask-app
 
 image:

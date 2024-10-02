@@ -18,6 +18,6 @@ spec:
         image: {{ .Values.image.app.repo }}:{{ .Values.image.app.tag }}
         envFrom:
         - configMapRef:
-            name: {{ .Values.common.resourceName.configmapName }}
+            name: {{ .Values.common.resourceName.cm }}
         ports:
           - containerPort: {{ .Values.expose.deployment.app }}

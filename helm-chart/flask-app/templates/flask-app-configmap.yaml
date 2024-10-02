@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.common.resourceName.configmapName }}
+  name: {{ .Values.common.resourceName.cm }}
   namespace: {{ .Values.common.namespace }}
 data:
   FLASK_APP: wsgi:app
