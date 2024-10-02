@@ -41,15 +41,7 @@ jobs:
           cd $HOME
           curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.30.0/2024-05-12/bin/linux/amd64/kubectl
           chmod +x ./kubectl
-          # mkdir ~/.kubernetes
-          # echo "${{ secrets.K8S_CONF }}" > ~/.kubernetes/admin.conf
-          # sudo mkdir /etc/kubernetes/admin.conf
-          # sudo cat << EOF > /etc/kubernetes/admin.conf
-          # ${{ secrets.K8S_CONF }} 
-          # EOF
-          # export KUBECONFIG=~/.kubernetes/admin.conf
-          # export PATH="kubectl:$PATH"
-          # echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc
-          # ./kubectl auth can-i get pods
+
           kubectl get pods -A
-        
+
+      
