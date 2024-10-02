@@ -31,6 +31,8 @@ jobs:
     steps:
       - name: say-hello
         run: |
+          whoami
           echo "hello"
           ls /etc
+          sudo apt-get install curl
         
