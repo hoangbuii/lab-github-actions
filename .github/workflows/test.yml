@@ -37,5 +37,5 @@ jobs:
           whoami
           echo "hello"
           sudo apt-get update
-          sudo apt-get install curl -y
+          sudo apt-get install curl libcurl4 -y
         
