@@ -8,5 +8,5 @@ dockerHub:
 kanikoJob:
   image: "gcr.io/kaniko-project/executor:latest"
   destination: "docker.io/my-username/my-repo:tag"
-  dockerfile: "~/Dockerfile"
+  dockerfile: "Dockerfile"
   context: "dir://workspace/"
