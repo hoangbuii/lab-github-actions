@@ -61,7 +61,7 @@ jobs:
 
       - name: Deploy to staging
         run: |
-          helm upgrade --install flask-app ./helm-chart/flask-app --namespace flask-app-staging --set-string image.app.tag=${{ github.ref_name }} 
+          helm upgrade --install flask-app ./helm-chart/flask-app --namespace flask-app-staging --set image.app.tag=${{ github.ref_name }},expose.service.app.nodePort=30008
 
           
 
