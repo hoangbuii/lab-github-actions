@@ -1,0 +1,12 @@
+# Docker Hub credentials
+dockerHub:
+  username: "my-username"
+  password: "my-password"
+  registry: "https://index.docker.io/v1/"
+
+# Kaniko Job settings
+kanikoJob:
+  image: "gcr.io/kaniko-project/executor:latest"
+  destination: "docker.io/my-username/my-repo:tag"
+  dockerfile: "Dockerfile"
+  context: "dir://workspace/"

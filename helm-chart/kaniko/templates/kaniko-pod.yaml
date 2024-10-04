@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kaniko-job
+  namespace: {{ .Release.Namespace }}
+spec:
+  template:
+    spec:
+      containers:
+      - name: kaniko
+        image: {{ .Values.kanikoJob.image }}
+        args:
+        - "--destination={{ .Values.kanikoJob.destination }}"
+        - "--dockerfile={{ .Values.kanikoJob.dockerfile }}"
+        - "--context={{ .Values.kanikoJob.context }}"
+        volumeMounts:
+        - name: kaniko-secret
+          mountPath: /kaniko/.docker/
+      restartPolicy: Never
+      volumes:
+      - name: kaniko-secret
+        secret:
+          secretName: kaniko-secret

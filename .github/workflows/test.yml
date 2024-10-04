@@ -27,6 +27,9 @@ on:
      branches:
       - '**'
 
+env:
+  DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/flask-app
+
 jobs:
   Prepare:
     # You need to use the INSTALLATION_NAME from the previous step
@@ -68,9 +71,9 @@ jobs:
       
       - name: Test Build
         run: |
-          sed -i "s/<CONFIG_MASK>/$(echo -n ${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }} | base64)/g" helm-chart/kaniko/config.json
-          echo -n ${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }} | base64
-          cat helm-chart/kaniko/config.json
+          helm install kaniko-build --set dockerHub.username=${{ secrets.DOCKER_USERNAME }},dockerHub.password=${{ secrets.DOCKER_USERNAME }},kanikoJob.destination=docker.io/${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+
+
           
 
 
