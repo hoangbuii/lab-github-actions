@@ -62,7 +62,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install helm
           helm list -A
-  
+
+      - name: Checkout
+        uses: actions/checkout@v3
+      
       - name: Test Build
         run: |
           sed -i "s/<CONFIG_MASK>/$(echo -n ${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }} | base64)/g" helm-chart/kaniko/config.json
