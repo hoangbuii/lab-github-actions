@@ -1,26 +1,4 @@
-# name: Continous Integration
-
-# on:
-#   push:
-#     branches:
-#       - '**'
-# jobs:
-#   build:
-#     name: Build
-#     runs-on:
-#       - self-hosted
-#       - k8s-runner
-#     steps:
-#       - name: Get Pods
-#         run: |
-#           set -ex
-#           cd $HOME
-#           wget https://dl.k8s.io/release/v1.26.0/bin/linux/arm64/kubectl
-#           chmod +x ./kubectl
-#           ./kubectl auth can-i get pods
-#           ./kubectl get pods -A
-
-name: Actions Runner Controller Demo
+name: Build and realse
 on:
 #  workflow_dispatch:
   push:
@@ -65,15 +43,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install helm
           helm list -A
-
-      - name: Checkout
-        uses: actions/checkout@v3
       
-      - name: Test Build
+      - name: Release
         run: |
-          ls 
-          pwd
-          helm upgrade --install kaniko-build helm-chart/kaniko --set dockerHub.username=${{ secrets.DOCKER_USERNAME }},dockerHub.password=${{ secrets.DOCKER_PASSWORD }},kanikoJob.destination=docker.io/${{ env.DOCKER_IMAGE }}:${{ github.sha }},kanikoJob.context=git://github.com/hoangbuii/lab-github-actions.git#refs/heads/master#${{ github.sha }}
+          helm upgrade --install kaniko-build helm-chart/kaniko --set dockerHub.username=${{ secrets.DOCKER_USERNAME }},dockerHub.password=${{ secrets.DOCKER_PASSWORD }},kanikoJob.destination=docker.io/${{ env.DOCKER_IMAGE }}:${{ github.ref_name }},kanikoJob.context=git://github.com/hoangbuii/lab-github-actions.git#refs/heads/master#${{ github.sha }}
+
+      - name: Deploy to staging
+        run: |
+          helm upgrade --install flask-app ./helm-chart/flask-app --namespace flask-app-staging --set-string image.app.tag=${{ github.ref_name }} 
 
           
 
