@@ -2,10 +2,10 @@ name: Build and realse
 #  workflow_dispatch:
 on:
   push:
-    tags: 
-      - "v*"
-    # branches:
-    #   - "**"
+    # tags: 
+    #   - "v*"
+    branches:
+      - "**"
       
 env:
   DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/flask-app
@@ -61,7 +61,7 @@ jobs:
 
       - name: Deploy to staging
         run: |
-          helm upgrade --install flask-app ./helm-chart/flask-app --namespace flask-app-staging --set image.app.tag=${{ github.ref_name }},expose.service.app.nodePort=30008
+          helm upgrade --install flask-app-staging ./helm-chart/flask-app --namespace flask-app-staging --set image.app.tag=${{ github.ref_name }},expose.service.app.nodePort=30008
 
           
 
