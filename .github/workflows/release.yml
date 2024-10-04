@@ -2,9 +2,11 @@ name: Build and realse
 #  workflow_dispatch:
 on:
   push:
-    tags: 
-      - "v*"
-
+    # tags: 
+    #   - "v*"
+    branches:
+      - "**"
+      
 env:
   DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/flask-app
 
