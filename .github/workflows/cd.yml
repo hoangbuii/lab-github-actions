@@ -15,7 +15,7 @@ jobs:
     runs-on: arc-runner-set
     if: github.event_name == 'workflow_dispatch'
     steps:
-      - name: Install kubectl
+      - name: Install dependencies
         run: |
           cd $HOME
           sudo apt-get update
@@ -49,6 +49,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy to staging
+      - name: Deploy to Production
         run: |
           helm upgrade --install flask-app ./helm-chart/flask-app --namespace flask-app --set image.app.tag=${{ github.ref_name }},expose.service.app.nodePort=30007

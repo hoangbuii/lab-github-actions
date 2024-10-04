@@ -15,7 +15,7 @@ jobs:
     # You need to use the INSTALLATION_NAME from the previous step
     runs-on: arc-runner-set
     steps:
-      - name: Install kubectl
+      - name: Install dependencies
         run: |
           cd $HOME
           sudo apt-get update
@@ -59,7 +59,7 @@ jobs:
         run: |
           helm upgrade --install kaniko-build helm-chart/kaniko --set dockerHub.username=${{ secrets.DOCKER_USERNAME }},dockerHub.password=${{ secrets.DOCKER_PASSWORD }},kanikoJob.destination=docker.io/${{ env.DOCKER_IMAGE }}:${{ github.ref_name }},kanikoJob.context=git://github.com/hoangbuii/lab-github-actions.git#refs/heads/master#${{ github.sha }}
 
-      - name: Deploy to staging
+      - name: Deploy to Staging
         run: |
           helm upgrade --install flask-app-staging ./helm-chart/flask-app --namespace flask-app-staging --set image.app.tag=${{ github.ref_name }},expose.service.app.nodePort=30008
 
