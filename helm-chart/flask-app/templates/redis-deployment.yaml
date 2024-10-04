@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.common.resourceName.db }}
-  namespace: {{ .Values.common.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ .Values.common.resourceName.db }}
 spec:
