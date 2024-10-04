@@ -2,11 +2,6 @@ name: Deploy to Production
 
 on:
   workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Tag to deploy'
-        required: true
-        default: 'v1.0.0'
   push:
     tags: 
       - "v*"
@@ -50,6 +45,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install helm
           helm list -A
+      
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Deploy to staging
         run: |
