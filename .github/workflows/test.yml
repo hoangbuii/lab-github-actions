@@ -73,8 +73,7 @@ jobs:
         run: |
           ls 
           pwd
-          helm upgrade --install kaniko-build helm-chart/kaniko --set dockerHub.username=${{ secrets.DOCKER_USERNAME }},dockerHub.password=${{ secrets.DOCKER_USERNAME }},kanikoJob.destination=docker.io/${{ env.DOCKER_IMAGE }}:${{ github.sha }}
-
+          helm upgrade --install kaniko-build helm-chart/kaniko --set dockerHub.username=${{ secrets.DOCKER_USERNAME }},dockerHub.password=${{ secrets.DOCKER_USERNAME }},kanikoJob.destination=docker.io/${{ env.DOCKER_IMAGE }}:${{ github.sha }},kanikoJob.context=git://github.com/hoangbuii/lab-github-actions.git#refs/heads/master#${{ github.sha }}
 
           
 
