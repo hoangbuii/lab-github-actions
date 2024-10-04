@@ -37,10 +37,12 @@ jobs:
           cd $HOME
           sudo apt-get update
           sudo apt-get install -y curl libcurl4
-          curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.30.0/2024-05-12/bin/linux/amd64/kubectl
-          chmod +x kubectl
-          mkdir -p ~/.kube
-          echo "${{ secrets.K8S_CONF }}" > ~/.kube/config
-          ls .kube
-          mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
-          echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc
+          sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
+          curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+          sudo chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+          echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+          sudo chmod 644 /etc/apt/sources.list.d/kubernetes.list
+          sudo apt-get update
+          sudo apt-get install -y kubectl
+          kubectl version --client
+
