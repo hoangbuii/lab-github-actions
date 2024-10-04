@@ -44,6 +44,15 @@ jobs:
           sudo apt-get install helm
           helm list -A
       
+
+      - name: Remove old build
+        run: |
+          helm uninstall kaniko-build -n arc-runners
+        continue-on-error: true
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Release
         run: |
           helm upgrade --install kaniko-build helm-chart/kaniko --set dockerHub.username=${{ secrets.DOCKER_USERNAME }},dockerHub.password=${{ secrets.DOCKER_PASSWORD }},kanikoJob.destination=docker.io/${{ env.DOCKER_IMAGE }}:${{ github.ref_name }},kanikoJob.context=git://github.com/hoangbuii/lab-github-actions.git#refs/heads/master#${{ github.sha }}
