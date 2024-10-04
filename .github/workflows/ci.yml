@@ -7,23 +7,23 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: docker:27.2
 
     env:
-      DOCKER_IMAGE: flask-app
+      DOCKER_IMAGE: flask-app:${{ github.sha }}
       DOCKER_NETWORK: flask-net
       DOCKER_CONTAINER_NAME: flask-app
 
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+    
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
-      # - name: Login to Docker hub
-      #   run: |
-      #     echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      # Build the Docker image
       - name: Build Docker image
         run: |
           docker build -t ${{ env.DOCKER_IMAGE }} .
@@ -34,6 +34,7 @@ jobs:
           docker network create ${{ env.DOCKER_NETWORK }}
           docker run -d --name redis -p 6379:6379 -v redis:/data --network ${{ env.DOCKER_NETWORK }} --network-alias redis redis:alpine
           docker run -d --name ${{ env.DOCKER_CONTAINER_NAME }} -p 8080:8080 -e FLASK_APP=${{ secrets.FLASK_APP }} -e FLASK_DEBUG=${{ secrets.FLASK_DEBUG }} -e GUNICORN_BIND=${{ secrets.GUNICORN_BIND }} -e PORT=${{ secrets.PORT }} -e DATABASE_URI=${{ secrets.DATABASE_URI }} --network ${{ env.DOCKER_NETWORK }} ${{ env.DOCKER_IMAGE }}
+          
       - name: Run unit tests with PyTest
         run: |
           docker exec ${{ env.DOCKER_CONTAINER_NAME }} poetry run pytest --pspec --cov=service --cov-fail-under=95
