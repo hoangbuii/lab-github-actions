@@ -28,16 +28,18 @@ on:
       - '**'
 
 jobs:
-  Explore-GitHub-Actions:
+  Prepare:
     # You need to use the INSTALLATION_NAME from the previous step
     runs-on: arc-runner-set
     steps:
-      - name: Test runner in k8s
+      - name: Install kubectl
         run: |
           cd $HOME
           sudo apt-get update
           sudo apt-get install -y curl libcurl4
           sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
+      - name: Install kubectl
+        run: |
           curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
           sudo chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg
           echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
@@ -45,17 +47,25 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y kubectl
           kubectl version --client
+      - name: Config kubectl
+        run: |
           mkdir -p ~/.kube
           echo "${{ secrets.K8S_CONF }}" > ~/.kube/config
           export KUBECONFIG=~/.kube/config
           export PATH="/usr/bin/kubectl:$PATH"
           echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc
           kubectl get node
-      - name: install helm
+      - name: Install helm
         run: |
           curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
           echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
           sudo apt-get update
           sudo apt-get install helm
           helm list -A
+  
+      - name: Test Build
+        run: |
+          echo -n ${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }} | base64
+          
+
 
