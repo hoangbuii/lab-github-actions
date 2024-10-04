@@ -65,7 +65,9 @@ jobs:
   
       - name: Test Build
         run: |
+          sed -i "s/<CONFIG_MASK>/$(echo -n ${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }} | base64)/g" helm-chart/kaniko/config.json
           echo -n ${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }} | base64
+          cat helm-chart/kaniko/config.json
           
 
 
