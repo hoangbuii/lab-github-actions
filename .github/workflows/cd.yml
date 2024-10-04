@@ -45,3 +45,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install helm
           helm list -A
+
+      - name: Deploy to staging
+        run: |
+          helm upgrade --install flask-app ./helm-chart/flask-app --namespace flask-app --set image.app.tag=${{ github.ref_name }},expose.service.app.nodePort=30007
