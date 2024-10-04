@@ -1,17 +1,21 @@
-name: Build and realse
-#  workflow_dispatch:
+name: Continous Deployment
+
 on:
   push:
     tags: 
       - "v*"
-    # branches:
-    #   - "**"
-      
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to deploy'
+        required: true
+        default: 'v1.2.1'
+
 env:
   DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/flask-app
 
 jobs:
-  Release:
+  Deploy:
     # You need to use the INSTALLATION_NAME from the previous step
     runs-on: arc-runner-set
     steps:
@@ -45,24 +49,3 @@ jobs:
           sudo apt-get update
           sudo apt-get install helm
           helm list -A
-      
-
-      - name: Remove old build
-        run: |
-          helm uninstall kaniko-build -n arc-runners
-        continue-on-error: true
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Release
-        run: |
-          helm upgrade --install kaniko-build helm-chart/kaniko --set dockerHub.username=${{ secrets.DOCKER_USERNAME }},dockerHub.password=${{ secrets.DOCKER_PASSWORD }},kanikoJob.destination=docker.io/${{ env.DOCKER_IMAGE }}:${{ github.ref_name }},kanikoJob.context=git://github.com/hoangbuii/lab-github-actions.git#refs/heads/master#${{ github.sha }}
-
-      - name: Deploy to staging
-        run: |
-          helm upgrade --install flask-app-staging ./helm-chart/flask-app --namespace flask-app-staging --set image.app.tag=${{ github.ref_name }},expose.service.app.nodePort=30008
-
-          
-
-
