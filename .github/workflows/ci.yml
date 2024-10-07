@@ -44,10 +44,10 @@ name: Kaniko Docker Build
 on:
   push:
     branches:
-      - main  # Trigger build on push to main branch
+      - master  # Trigger build on push to main branch
   pull_request:
     branches:
-      - main  # Trigger on pull requests
+      - master  # Trigger on pull requests
 
 jobs:
   build:
