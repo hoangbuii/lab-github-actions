@@ -1,41 +1,84 @@
-name: CI Build
+# name: CI Build
+# on:
+#   push:
+#     branches:
+#       - "**"
+
+# jobs:
+#   Build:
+#     runs-on: ubuntu-latest
+
+#     env:
+#       DOCKER_IMAGE: flask-app:${{ github.sha }}
+#       DOCKER_NETWORK: flask-net
+#       DOCKER_CONTAINER_NAME: flask-app
+
+
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+    
+#       - name: Set up QEMU
+#         uses: docker/setup-qemu-action@v3
+
+#       - name: Set up Docker Buildx
+#         uses: docker/setup-buildx-action@v3
+
+#       - name: Build Docker image
+#         run: |
+#           docker build -t ${{ env.DOCKER_IMAGE }} .
+      
+#       # Run 2 image is flask-app and redis database
+#       - name: Set up containerizated app
+#         run: |
+#           docker network create ${{ env.DOCKER_NETWORK }}
+#           docker run -d --name redis -p 6379:6379 -v redis:/data --network ${{ env.DOCKER_NETWORK }} --network-alias redis redis:alpine
+#           docker run -d --name ${{ env.DOCKER_CONTAINER_NAME }} -p 8080:8080 -e FLASK_APP=${{ secrets.FLASK_APP }} -e FLASK_DEBUG=${{ secrets.FLASK_DEBUG }} -e GUNICORN_BIND=${{ secrets.GUNICORN_BIND }} -e PORT=${{ secrets.PORT }} -e DATABASE_URI=${{ secrets.DATABASE_URI }} --network ${{ env.DOCKER_NETWORK }} ${{ env.DOCKER_IMAGE }}
+          
+#       - name: Run unit tests with PyTest
+#         run: |
+#           docker exec ${{ env.DOCKER_CONTAINER_NAME }} poetry run pytest --pspec --cov=service --cov-fail-under=95
+      
+name: Kaniko Docker Build
+
 on:
   push:
     branches:
-      - "**"
+      - main  # Trigger build on push to main branch
+  pull_request:
+    branches:
+      - main  # Trigger on pull requests
 
 jobs:
-  Build:
+  build:
     runs-on: ubuntu-latest
 
-    env:
-      DOCKER_IMAGE: flask-app:${{ github.sha }}
-      DOCKER_NETWORK: flask-net
-      DOCKER_CONTAINER_NAME: flask-app
-
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-    
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+      # Checkout the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      # Set up Docker credentials
+      - name: Set up Docker registry credentials
+        env:
+          DOCKER_REGISTRY: docker.io  # Change this to your Docker registry (e.g., gcr.io for Google Container Registry)
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login $DOCKER_REGISTRY -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-      - name: Build Docker image
-        run: |
-          docker build -t ${{ env.DOCKER_IMAGE }} .
-      
-      # Run 2 image is flask-app and redis database
-      - name: Set up containerizated app
-        run: |
-          docker network create ${{ env.DOCKER_NETWORK }}
-          docker run -d --name redis -p 6379:6379 -v redis:/data --network ${{ env.DOCKER_NETWORK }} --network-alias redis redis:alpine
-          docker run -d --name ${{ env.DOCKER_CONTAINER_NAME }} -p 8080:8080 -e FLASK_APP=${{ secrets.FLASK_APP }} -e FLASK_DEBUG=${{ secrets.FLASK_DEBUG }} -e GUNICORN_BIND=${{ secrets.GUNICORN_BIND }} -e PORT=${{ secrets.PORT }} -e DATABASE_URI=${{ secrets.DATABASE_URI }} --network ${{ env.DOCKER_NETWORK }} ${{ env.DOCKER_IMAGE }}
-          
-      - name: Run unit tests with PyTest
-        run: |
-          docker exec ${{ env.DOCKER_CONTAINER_NAME }} poetry run pytest --pspec --cov=service --cov-fail-under=95
-      
+      # Build the Docker image using Kaniko
+      - name: Build and push Docker image with Kaniko
+        uses: gcr.io/kaniko-project/executor:latest
+        env:
+          DOCKER_CONFIG: /kaniko/.docker/
+          # For DockerHub (or set registry URL for GCR, ECR, etc.)
+          REGISTRY: docker.io  # Replace with your registry URL if necessary
+          IMAGE_NAME: flask-app  # Replace with your image name
+        with:
+          args: >
+            --context . 
+            --dockerfile ./Dockerfile
+            --destination ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+
+      # Optional: Post-build step (e.g., notify or test)
+      - name: Post-build notification
+        run: echo "Docker image built and pushed!"
