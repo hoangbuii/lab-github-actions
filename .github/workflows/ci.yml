@@ -67,7 +67,7 @@ jobs:
 
       # Build the Docker image using Kaniko
       - name: Build and push Docker image with Kaniko
-        uses: gcr.io/kaniko-project/executor:latest
+        uses: aevea/action-kaniko@master
         env:
           DOCKER_CONFIG: /kaniko/.docker/
           # For DockerHub (or set registry URL for GCR, ECR, etc.)
