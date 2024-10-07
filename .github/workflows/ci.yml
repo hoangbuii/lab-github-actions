@@ -75,7 +75,7 @@ jobs:
           IMAGE_NAME: flask-app  # Replace with your image name
         with:
           args: >
-            --context . 
+            --context ${{ github.repositoryUrl }}#${{ github.ref }}#${{ github.sha }}
             --dockerfile ./Dockerfile
             --destination ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
 
