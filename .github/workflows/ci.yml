@@ -84,4 +84,4 @@ jobs:
 
       # Optional: Post-build step (e.g., notify or test)
       - name: Post-build notification
-        run: echo "Docker image built and pushed!"
+        run: echo "Docker image built and pushed! "
