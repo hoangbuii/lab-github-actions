@@ -53,32 +53,24 @@ jobs:
   build:
     runs-on: arc-runner-set
 
+    container:
+      image: gcr.io/kaniko-project/executor:debug 
+    permissions:
+      contents: read # read the repository
+      packages: write # push to GHCR, omit if not pushing to GitHub's container registry
+
     steps:
-      # Checkout the code from the repository
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: authen
+        run: |
+          AUTH=$(echo -n ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} | base64)
+          echo "{\"auths\": {\"ghcr.io\": {\"auth\": \"${AUTH}\"}}}" > /kaniko/.docker/config.json
 
-      
-      # Build the Docker image using Kaniko
-      - name: Build and push Docker image with Kaniko
-        uses: aevea/action-kaniko@master
-        env:
-          DOCKER_CONFIG: /kaniko/.docker/
-          # For DockerHub (or set registry URL for GCR, ECR, etc.)
-          REGISTRY: docker.io  # Replace with your registry URL if necessary
-          IMAGE_NAME: flask-app  # Replace with your image name
-        with:
-          image: aevea/kaniko
-          registry: docker.io
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          cache: true
-          cache_registry: aevea/cache
-          args: >
-            --context ${{ github.repositoryUrl }}#${{ github.ref }}#${{ github.sha }}
-            --dockerfile ./Dockerfile
-            --destination ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+      - name: Build and push container test
+        run: |
+          /kaniko/executor --dockerfile="./Dockerfile" \
+            --context="${{ github.repositoryUrl }}#${{ github.ref }}#${{ github.sha }}" \
+            --destination=docker.io/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest \
+            --push-retry 5 
 
-      # Optional: Post-build step (e.g., notify or test)
-      - name: Post-build notification
-        run: echo "Docker image built and pushed! "
+
+        
