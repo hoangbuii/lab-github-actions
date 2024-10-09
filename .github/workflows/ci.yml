@@ -59,14 +59,6 @@ jobs:
         uses: actions/checkout@v3
 
       
-      # Set up Docker credentials
-
-      - name: Build and push container test
-        run: |
-          # Write config file, change to your destination registry
-          AUTH=$(echo -n ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} | base64)
-          "auth": "$(echo -n "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }}" | base64 )
-
       # Build the Docker image using Kaniko
       - name: Build and push Docker image with Kaniko
         uses: aevea/action-kaniko@master
@@ -76,9 +68,12 @@ jobs:
           REGISTRY: docker.io  # Replace with your registry URL if necessary
           IMAGE_NAME: flask-app  # Replace with your image name
         with:
+          image: aevea/kaniko
           registry: docker.io
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+          cache: true
+          cache_registry: aevea/cache
           args: >
             --context ${{ github.repositoryUrl }}#${{ github.ref }}#${{ github.sha }}
             --dockerfile ./Dockerfile
