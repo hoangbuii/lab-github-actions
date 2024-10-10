@@ -76,14 +76,15 @@ jobs:
   #           --push-retry 5 
   build:
     runs-on: arc-runner-set
-
+    container:
+      image: gcr.io/kaniko-project/executor:v1.20.0-debug
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       
       - name: Build with kaniko
         run: |
-          sudo mkdir -p /kaniko/.docker/
+          mkdir -p /kaniko/.docker/
           cat <<EOF > /kaniko/.docker/config.json
           {
             "auths": {
