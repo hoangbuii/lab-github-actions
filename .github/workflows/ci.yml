@@ -83,6 +83,7 @@ jobs:
       
       - name: Build with kaniko
         run: |
+          mkdir /kaniko/.docker/
           cat <<EOF > /kaniko/.docker/config.json
           {
             "auths": {
