@@ -98,7 +98,7 @@ jobs:
           
           /kaniko/executor --dockerfile="./Dockerfile" \
           --context="${{ github.repositoryUrl }}#${{ github.ref }}#${{ github.sha }}"  \
-          --destination="${{ secrets.DOCKERHUB_USERNAME }}/flask-app:$(echo ${{ github.sha }} | head -c 7)" \
+          --destination="docker.io/${{ secrets.DOCKER_USERNAME }}/flask-app:$(echo ${{ github.sha }} | head -c 7)" \
           ${{ env.KANIKO_CACHE_ARGS }} \
           --push-retry 5
   
