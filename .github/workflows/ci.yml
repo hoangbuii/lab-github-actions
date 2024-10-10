@@ -50,27 +50,39 @@ on:
       - master  # Trigger on pull requests
 
 jobs:
+  # build:
+  #   runs-on: arc-runner-set
+
+  #   container:
+  #     image: gcr.io/kaniko-project/executor:debug 
+  #   permissions:
+  #     contents: read # read the repository
+  #     packages: write # push to GHCR, omit if not pushing to GitHub's container registry
+
+  #   steps:
+  #     - name: authen
+  #       run: |
+  #         AUTH=$(echo -n ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} | base64)
+  #         echo "{\"auths\": {\"ghcr.io\": {\"auth\": \"${AUTH}\"}}}" > /kaniko/.docker/config.json
+
+  #     - name: Build and push container test
+  #       run: |
+  #         /kaniko/executor --dockerfile="./Dockerfile" \
+  #           --context="${{ github.repositoryUrl }}#${{ github.ref }}#${{ github.sha }}" \
+  #           --destination=docker.io/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest \
+  #           --push-retry 5 
   build:
     runs-on: arc-runner-set
-
-    container:
-      image: gcr.io/kaniko-project/executor:debug 
-    permissions:
-      contents: read # read the repository
-      packages: write # push to GHCR, omit if not pushing to GitHub's container registry
-
     steps:
-      - name: authen
-        run: |
-          AUTH=$(echo -n ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} | base64)
-          echo "{\"auths\": {\"ghcr.io\": {\"auth\": \"${AUTH}\"}}}" > /kaniko/.docker/config.json
-
-      - name: Build and push container test
-        run: |
-          /kaniko/executor --dockerfile="./Dockerfile" \
-            --context="${{ github.repositoryUrl }}#${{ github.ref }}#${{ github.sha }}" \
-            --destination=docker.io/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest \
-            --push-retry 5 
+      - uses: actions/checkout@master
+      - name: Kaniko build
+        uses: aevea/action-kaniko@master
+        with:
+          image: aevea/kaniko
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          cache: true
+          cache_registry: aevea/cache
 
 
         
