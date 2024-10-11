@@ -104,7 +104,10 @@ jobs:
       - name: Clean
         run: |
           ls $GITHUB_ACTION_PATH
+          pwd
           cd $GITHUB_ACTION_PATH
+          pwd
+          ls
           cd ..
           ls 
 
