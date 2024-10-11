@@ -105,6 +105,7 @@ jobs:
         run: |
           cd $GITHUB_ACTION_PATH
           cd ..
+          du -hs
           du -hs $(ls)
           cd __e
           du -hs $(ls)
