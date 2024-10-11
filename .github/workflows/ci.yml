@@ -103,7 +103,9 @@ jobs:
           --push-retry 5
       - name: Clean
         run: |
-          ls $GITHUB_ACTION_PATH
+          cd $GITHUB_ACTION_PATH
+          cd ..
+          ls
 
 
         
