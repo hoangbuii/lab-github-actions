@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis
-  namespace: flask-app
+  namespace: flask-app-test
   labels:
     app: redis
 spec:
