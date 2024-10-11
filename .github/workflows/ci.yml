@@ -101,7 +101,12 @@ jobs:
           --destination="docker.io/${{ secrets.DOCKER_USERNAME }}/flask-app:$(echo ${{ github.sha }} | head -c 7)" \
           ${{ env.KANIKO_CACHE_ARGS }} \
           --push-retry 5
-  
+      - name: Clean
+        run: |
+          ls $GITHUB_ACTION_PATH
+          cd $GITHUB_ACTION_PATH
+          cd ..
+          ls 
 
 
         
