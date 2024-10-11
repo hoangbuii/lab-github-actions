@@ -105,11 +105,6 @@ jobs:
         run: |
           cd $GITHUB_ACTION_PATH
           cd ..
-          ls
-          cd mnt
-          ls
-          echo "------"
-          cd nfs
-          ls
+          du -hs $(ls)
 
         
