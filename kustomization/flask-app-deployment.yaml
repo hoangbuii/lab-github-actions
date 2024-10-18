@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: flask-app
-        image: docker.io/hoangbuii2711/flask-app:v1.2.1
+        image: docker.io/hoangbuii2711/flask-app:v4.1
         envFrom:
         - configMapRef:
             name: flask-app-env
